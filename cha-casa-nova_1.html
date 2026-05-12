@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chá de Casa Nova — Lucilly & Ana Aline</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --cream:#FAF7F2;--warm:#F0EBE1;--brown:#6B4F3A;--dark:#2C1A10;
+    --green:#3B6D11;--green-light:#EAF3DE;--green-mid:#639922;
+    --border:#D3C9BA;--shadow:0 2px 16px rgba(44,26,16,0.08);
+  }
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--dark);min-height:100vh}
+
+  /* HEADER */
+  .hero{text-align:center;padding:3rem 1rem 2rem;background:linear-gradient(180deg,#FFF9F4 0%,var(--cream) 100%);border-bottom:1px solid var(--border)}
+  .hero-tag{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--brown);margin-bottom:12px;font-weight:500}
+  .hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.2rem);color:var(--dark);line-height:1.15;margin-bottom:8px}
+  .hero h1 em{font-style:italic;color:var(--brown)}
+  .hero p{color:#7A6655;font-size:15px;max-width:420px;margin:0 auto 1.5rem;line-height:1.6}
+  .hero-stats{display:flex;justify-content:center;gap:2rem;font-size:13px;color:var(--brown);flex-wrap:wrap}
+  .hero-stats span strong{display:block;font-size:20px;font-family:'Playfair Display',serif;color:var(--dark)}
+
+  /* FILTROS */
+  .filters{display:flex;gap:8px;padding:1.25rem 1.5rem;overflow-x:auto;border-bottom:1px solid var(--border);background:#fff}
+  .filter-btn{white-space:nowrap;padding:6px 16px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;color:#7A6655;transition:.15s}
+  .filter-btn.active,.filter-btn:hover{background:var(--dark);color:#fff;border-color:var(--dark)}
+
+  /* GRID */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.25rem;padding:1.5rem;max-width:1100px;margin:0 auto}
+
+  /* CARD */
+  .card{background:#fff;border-radius:16px;border:1px solid var(--border);overflow:hidden;transition:.2s;position:relative}
+  .card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+  .card.adquirido{opacity:.55}
+  .card-img{width:100%;height:160px;object-fit:cover;background:var(--warm);display:flex;align-items:center;justify-content:center;font-size:48px}
+  .card-body{padding:14px 16px 16px}
+  .card-cat{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--brown);margin-bottom:4px;font-weight:500}
+  .card-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:600;margin-bottom:4px;line-height:1.3}
+  .card-desc{font-size:12px;color:#8A7565;margin-bottom:12px;line-height:1.5}
+  .card-footer{display:flex;align-items:center;justify-content:space-between}
+  .card-price{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--brown);font-weight:600}
+  .btn-buy{background:var(--dark);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:.15s}
+  .btn-buy:hover{background:var(--brown)}
+  .badge-adquirido{position:absolute;top:12px;right:12px;background:var(--green-light);color:var(--green);font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;border:1px solid #C0DD97}
+  .btn-adquirido{background:var(--green-light);color:var(--green-mid);border:none;border-radius:8px;padding:7px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:default}
+
+  /* MODAL */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(44,26,16,0.55);z-index:999;align-items:center;justify-content:center;padding:1rem}
+  .modal-overlay.open{display:flex}
+  .modal{background:#fff;border-radius:20px;max-width:440px;width:100%;padding:0;overflow:hidden;max-height:90vh;overflow-y:auto}
+  .modal-header{padding:1.5rem 1.5rem 1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start}
+  .modal-header h2{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--dark)}
+  .modal-close{background:none;border:none;font-size:22px;color:#aaa;cursor:pointer;line-height:1;padding:0 4px}
+  .modal-body{padding:1.25rem 1.5rem}
+
+  /* CHECKOUT */
+  .checkout-item{display:flex;gap:12px;align-items:center;padding:12px;background:var(--warm);border-radius:12px;margin-bottom:1rem}
+  .checkout-emoji{font-size:32px;width:52px;height:52px;background:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .checkout-info h3{font-family:'Playfair Display',serif;font-size:1rem}
+  .checkout-info p{font-size:13px;color:#8A7565}
+  .checkout-price{margin-left:auto;font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:600;color:var(--brown);white-space:nowrap}
+
+  /* QR CODE */
+  .qr-block{border:1.5px dashed var(--border);border-radius:14px;padding:1.25rem;text-align:center;background:var(--warm);margin-bottom:1rem}
+  .qr-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--brown);margin-bottom:12px;font-weight:500}
+  .qr-img{width:180px;height:180px;margin:0 auto 12px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border)}
+  .qr-img img{width:100%;height:100%;border-radius:8px}
+  .pix-copy-code{font-size:11px;color:#8A7565;word-break:break-all;font-family:monospace;background:#fff;padding:8px;border-radius:8px;border:1px solid var(--border);margin-bottom:8px;text-align:left;max-height:60px;overflow:hidden}
+  .pix-name{font-size:13px;color:#8A7565}
+
+  .btn-copy{display:block;width:100%;padding:10px;background:var(--dark);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;margin-bottom:8px;transition:.15s}
+  .btn-copy:hover{background:var(--brown)}
+  .btn-confirm{display:block;width:100%;padding:12px;background:var(--green);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:.15s}
+  .btn-confirm:hover{background:#27500A}
+  .btn-confirm:disabled{background:#aaa;cursor:not-allowed}
+
+  .status-msg{font-size:12px;color:#8A7565;text-align:center;margin-bottom:1rem;line-height:1.5}
+  .status-checking{color:var(--brown)}
+  .status-ok{color:var(--green);font-weight:500}
+
+  .success-box{text-align:center;padding:1rem 0}
+  .success-icon{font-size:48px;margin-bottom:8px}
+  .success-box h3{font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:8px}
+  .success-box p{font-size:13px;color:#8A7565;line-height:1.6}
+
+  .loading-box{text-align:center;padding:2rem 0;color:#8A7565;font-size:14px}
+  .spinner{display:inline-block;width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--brown);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:10px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:20px;right:20px;background:var(--dark);color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none}
+  .toast.show{opacity:1}
+
+  .empty{text-align:center;padding:3rem;color:#aaa;font-family:'Playfair Display',serif;font-size:1.1rem;grid-column:1/-1}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">✦ Chá de Casa Nova ✦</div>
+  <h1>Lucilly <em>&</em><br>Ana Aline</h1>
+  <p>Escolha um presente para nos ajudar a montar nosso lar com muito amor 🏡</p>
+  <div class="hero-stats">
+    <span><strong id="stat-total">0</strong>itens no total</span>
+    <span><strong id="stat-disp">0</strong>disponíveis</span>
+    <span><strong id="stat-adq">0</strong>já presenteados</span>
+  </div>
+</div>
+
+<div class="filters">
+  <button class="filter-btn active" onclick="filtrar('todos',this)">Todos</button>
+  <button class="filter-btn" onclick="filtrar('Cozinha',this)">🍳 Cozinha</button>
+  <button class="filter-btn" onclick="filtrar('Sala',this)">🛋️ Sala</button>
+  <button class="filter-btn" onclick="filtrar('Quarto',this)">🛏️ Quarto</button>
+  <button class="filter-btn" onclick="filtrar('Banheiro',this)">🚿 Banheiro</button>
+  <button class="filter-btn" onclick="filtrar('Eletros',this)">⚡ Eletros</button>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="modal-overlay" id="modal" onclick="fecharSeOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">Presentear</h2>
+      <button class="modal-close" onclick="fecharModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+//  CONFIGURAÇÃO — preencha com suas credenciais do Mercado Pago
+// ============================================================
+const MP_ACCESS_TOKEN = 'TEST-7406241791248314-051218-4a25c1e1ba30ebb60033b31fcee78f62-25439878';
+const MP_PUBLIC_KEY   = 'TEST-b8d8b942-09cf-4175-8a02-8b6fc307eac7';
+const NOME_RECEBEDOR  = 'Lucilly e Ana Aline';
+// ============================================================
+
+// ============================================================
+//  LISTA DE PRESENTES — edite à vontade!
+// ============================================================
+const PRODUTOS = [
+  {id:1,  nome:"Jogo de Panelas",      cat:"Cozinha",   emoji:"🍳", desc:"Jogo com 5 peças antiaderente",           preco:289.90},
+  {id:2,  nome:"Liquidificador",       cat:"Eletros",   emoji:"⚡", desc:"Potência 700W, copo 2L",                  preco:149.90},
+  {id:3,  nome:"Jogo de Lençol",       cat:"Quarto",    emoji:"🛏️", desc:"Queen, 4 peças, 200 fios",                preco:129.90},
+  {id:4,  nome:"Cafeteira",            cat:"Eletros",   emoji:"☕", desc:"Elétrica 30 xícaras",                     preco:99.90},
+  {id:5,  nome:"Toalhas de Banho",     cat:"Banheiro",  emoji:"🚿", desc:"Kit 4 peças felpudas",                    preco:89.90},
+  {id:6,  nome:"Quadro Decorativo",    cat:"Sala",      emoji:"🖼️", desc:"60x80cm com moldura",                     preco:79.90},
+  {id:7,  nome:"Jogo de Pratos",       cat:"Cozinha",   emoji:"🍽️", desc:"12 peças porcelana branca",               preco:159.90},
+  {id:8,  nome:"Espelho Sala",         cat:"Sala",      emoji:"🪞", desc:"Redondo 60cm com moldura dourada",        preco:199.90},
+  {id:9,  nome:"Ferro de Passar",      cat:"Eletros",   emoji:"👔", desc:"A vapor, 2400W",                          preco:119.90},
+  {id:10, nome:"Travesseiros",         cat:"Quarto",    emoji:"😴", desc:"Par de travesseiros pluma sintética",     preco:69.90},
+  {id:11, nome:"Tapete Sala",          cat:"Sala",      emoji:"🏠", desc:"200x250cm, coleção modern",               preco:349.90},
+  {id:12, nome:"Jogo de Xícaras",      cat:"Cozinha",   emoji:"☕", desc:"6 xícaras de porcelana + pires",          preco:59.90},
+];
+// ============================================================
+
+let filtroAtual = 'todos';
+let adquiridos  = {};
+let pagamentoAtual = null;
+let checkInterval  = null;
+
+// --- Persistência local (localStorage como fallback) ---
+function salvarAdquiridos(){
+  localStorage.setItem('cha_adquiridos_lucilly_analine', JSON.stringify(adquiridos));
+}
+function carregarAdquiridos(){
+  try{
+    const s = localStorage.getItem('cha_adquiridos_lucilly_analine');
+    if(s) adquiridos = JSON.parse(s);
+  }catch(e){ adquiridos = {}; }
+  renderizar();
+}
+
+// --- Filtro ---
+function filtrar(cat, btn){
+  filtroAtual = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderizar();
+}
+
+// --- Render ---
+function renderizar(){
+  const grid   = document.getElementById('grid');
+  const lista  = filtroAtual === 'todos' ? PRODUTOS : PRODUTOS.filter(p => p.cat === filtroAtual);
+  const adqCount = Object.values(adquiridos).filter(Boolean).length;
+
+  document.getElementById('stat-total').textContent = PRODUTOS.length;
+  document.getElementById('stat-disp').textContent  = PRODUTOS.length - adqCount;
+  document.getElementById('stat-adq').textContent   = adqCount;
+
+  if(!lista.length){ grid.innerHTML = '<div class="empty">Nenhum item nesta categoria.</div>'; return; }
+
+  grid.innerHTML = lista.map(p => {
+    const adq = adquiridos[p.id];
+    return `<div class="card ${adq ? 'adquirido' : ''}">
+      ${adq ? '<div class="badge-adquirido">✓ Presenteado</div>' : ''}
+      <div class="card-img">${p.emoji}</div>
+      <div class="card-body">
+        <div class="card-cat">${p.cat}</div>
+        <div class="card-name">${p.nome}</div>
+        <div class="card-desc">${p.desc}</div>
+        <div class="card-footer">
+          <div class="card-price">R$\u00a0${p.preco.toFixed(2).replace('.',',')}</div>
+          ${adq
+            ? '<button class="btn-adquirido">✓ Adquirido</button>'
+            : `<button class="btn-buy" onclick="abrirModal(${p.id})">Presentear</button>`}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// --- Modal ---
+function abrirModal(id){
+  const p = PRODUTOS.find(x => x.id === id);
+  document.getElementById('modal-title').textContent = 'Presentear — ' + p.nome;
+  document.getElementById('modal-body').innerHTML = `
+    <div class="loading-box">
+      <div class="spinner"></div>
+      <p>Gerando PIX...</p>
+    </div>`;
+  document.getElementById('modal').classList.add('open');
+  gerarPix(p);
+}
+
+function fecharModal(){
+  document.getElementById('modal').classList.remove('open');
+  if(checkInterval){ clearInterval(checkInterval); checkInterval = null; }
+  pagamentoAtual = null;
+}
+
+function fecharSeOverlay(e){
+  if(e.target === document.getElementById('modal')) fecharModal();
+}
+
+// --- Mercado Pago: criar pagamento PIX ---
+async function gerarPix(p){
+  const preco = parseFloat(p.preco.toFixed(2));
+  try{
+    const body = {
+      transaction_amount: preco,
+      description: `Presente - ${p.nome} | Chá de Casa Nova Lucilly & Ana Aline`,
+      payment_method_id: 'pix',
+      payer: { email: 'convidado@email.com' }
+    };
+
+    const resp = await fetch('https://api.mercadopago.com/v1/payments', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${MP_ACCESS_TOKEN}`,
+        'X-Idempotency-Key': `cha-${p.id}-${Date.now()}`
+      },
+      body: JSON.stringify(body)
+    });
+
+    const data = await resp.json();
+
+    if(!resp.ok){
+      throw new Error(data.message || 'Erro ao gerar PIX');
+    }
+
+    pagamentoAtual = { id: data.id, produtoId: p.id, produtoNome: p.nome };
+    const qrCode   = data.point_of_interaction.transaction_data.qr_code;
+    const qrBase64 = data.point_of_interaction.transaction_data.qr_code_base64;
+
+    mostrarQR(p, qrCode, qrBase64);
+    iniciarVerificacao();
+
+  }catch(err){
+    document.getElementById('modal-body').innerHTML = `
+      <p style="color:#c00;text-align:center;padding:1rem;font-size:14px">
+        ⚠️ Erro ao gerar PIX:<br><small>${err.message}</small>
+      </p>`;
+  }
+}
+
+// --- Exibir QR Code ---
+function mostrarQR(p, qrCode, qrBase64){
+  const preco = `R$\u00a0${p.preco.toFixed(2).replace('.',',')}`;
+  document.getElementById('modal-body').innerHTML = `
+    <div class="checkout-item">
+      <div class="checkout-emoji">${p.emoji}</div>
+      <div class="checkout-info">
+        <h3>${p.nome}</h3>
+        <p>${p.desc}</p>
+      </div>
+      <div class="checkout-price">${preco}</div>
+    </div>
+
+    <div class="qr-block">
+      <div class="qr-label">Pague ${preco} via PIX</div>
+      <div class="qr-img">
+        <img src="data:image/png;base64,${qrBase64}" alt="QR Code PIX" />
+      </div>
+      <div class="pix-copy-code" id="pix-code">${qrCode}</div>
+      <div class="pix-name">${NOME_RECEBEDOR}</div>
+    </div>
+
+    <button class="btn-copy" onclick="copiarPix()">📋 Copiar código PIX</button>
+
+    <p class="status-msg status-checking" id="status-msg">
+      ⏳ Aguardando confirmação do pagamento...
+    </p>
+
+    <button class="btn-confirm" id="btn-ja-paguei" onclick="confirmarManual()">
+      Já realizei o pagamento ✓
+    </button>`;
+}
+
+// --- Verificação automática ---
+function iniciarVerificacao(){
+  if(checkInterval) clearInterval(checkInterval);
+  checkInterval = setInterval(verificarPagamento, 5000);
+}
+
+async function verificarPagamento(){
+  if(!pagamentoAtual) return;
+  try{
+    const resp = await fetch(`https://api.mercadopago.com/v1/payments/${pagamentoAtual.id}`, {
+      headers:{ 'Authorization': `Bearer ${MP_ACCESS_TOKEN}` }
+    });
+    const data = await resp.json();
+    if(data.status === 'approved'){
+      clearInterval(checkInterval);
+      checkInterval = null;
+      marcarAdquirido(pagamentoAtual.produtoId, pagamentoAtual.produtoNome);
+    }
+  }catch(e){}
+}
+
+// --- Confirmação manual (fallback) ---
+function confirmarManual(){
+  if(!pagamentoAtual) return;
+  clearInterval(checkInterval);
+  checkInterval = null;
+  marcarAdquirido(pagamentoAtual.produtoId, pagamentoAtual.produtoNome);
+}
+
+// --- Marcar item como adquirido ---
+function marcarAdquirido(produtoId, produtoNome){
+  adquiridos[produtoId] = true;
+  salvarAdquiridos();
+  renderizar();
+  document.getElementById('modal-body').innerHTML = `
+    <div class="success-box">
+      <div class="success-icon">🎉</div>
+      <h3>Muito obrigado!</h3>
+      <p>O presente <strong>${produtoNome}</strong> foi confirmado.<br><br>
+      Lucilly e Ana Aline agradecem imensamente pelo carinho! 💛</p>
+    </div>`;
+  pagamentoAtual = null;
+  setTimeout(fecharModal, 4000);
+}
+
+function copiarPix(){
+  const code = document.getElementById('pix-code').textContent;
+  navigator.clipboard.writeText(code).catch(()=>{});
+  showToast('Código PIX copiado!');
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+carregarAdquiridos();
+</script>
+</body>
+</html>
